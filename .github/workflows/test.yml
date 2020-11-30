@@ -1,0 +1,15 @@
+name: Build and Deploy to GKE
+on:
+  - push
+env:
+  PR: ${{ github.base_ref }}
+jobs:
+  validate:
+    name: Validate merging order
+    runs-on: ubuntu-latest
+    steps:
+    - name: step one
+      run: echo "Step one"
+    - name: step two
+      if: "!contains(env.PR, 'test')"
+      run: echo "Step two"
