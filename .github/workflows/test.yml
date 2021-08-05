@@ -10,4 +10,4 @@ jobs:
     - name: step one
       run: echo "CLUSTER_NAME=${{ github.event.release.name }}" >> $GITHUB_ENV
     - name: verify cluster
-      run:  jq -cr ".test[] | select(.==\"$CLUSTER_NAME\")' clusters.json
+      run:  jq -cr ".test[] | select(.==\"$CLUSTER_NAME\")" clusters.json
