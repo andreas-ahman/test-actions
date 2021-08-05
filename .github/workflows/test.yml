@@ -8,4 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: step one
-      run: echo ${{ toJson(github.event) }}
+      run: echo "CLUSTER_NAME=${{ github.event.release.name }}" >> $GITHUB_ENV
+    - name: verify cluster
+      run:  jq -cr ".test[] | select(.==\"$CLUSTER_NAME\")' clusters.json
