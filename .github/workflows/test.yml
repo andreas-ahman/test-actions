@@ -15,7 +15,7 @@ jobs:
       run:  jq -cr ".test[] | select(.==\"$CLUSTER_NAME\")" clusters.json
     - name: verify branch
       run: |
-        export tag=$(echo $TAG | cut -d '-' -f 1)
+        export tag=$(echo $TAG | cut -d '-' -f 2)
         if [[ "$tag" == "$BRANCH" ]]; then
           echo "OK, branch and tag match"
         else
