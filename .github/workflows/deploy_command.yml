@@ -16,11 +16,14 @@ jobs:
           echo """${{ toJson(github) }}"""
       - name: Find Comment
         uses: peter-evans/find-comment@v1
+        id: fc
         with:
           direction: last
           issue-number: ${{ github.event.client_payload.github.payload.issue.number }}
           body-includes: "check5"
           #body-includes: ${{ github.event.client_payload.github.payload.slash_command.args.all }}
+      - run: |
+          echo ${{ steps.fc.outputs.comment-id }}
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v1
         with:
