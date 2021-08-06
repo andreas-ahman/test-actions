@@ -76,10 +76,18 @@ jobs:
       - name: verify order
         if: env.OVERRIDE != 'true'
         run: |
-          if [[ "${{steps.fc.outputs.comment-id}}" != "" ]] || [[ "${OVERRIDE}" != "true" ]]; then
-            echo "Previous installation was ok or overridden"
+          if [[ "${ENVIRONMENT}" == "test" ]]; then
+            echo "test environment, no need to check"
+            exit 0
+          fi
+          if [[ "${ENVIRONMENT}" == "dev" ]]; then
+            echo "Dev environment, no need to check"
+            exit 0
+          fi
+          if [[ "${{steps.fc.outputs.comment-id}}" != "" ]]; then
+            echo "Previous installation was ok! Proceeding"
           else
-            echo "::error::Unable to fix previous version applied correctly, aborting."
+            echo "::error::Previous version not applied correctly, aborting."
             exit 1
           fi
       # Send update comment with +1 before starting to apply
