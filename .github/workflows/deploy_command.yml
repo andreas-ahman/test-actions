@@ -15,7 +15,7 @@ jobs:
         run: |
           echo """${{ toJson(github) }}"""
       - name: Find Comment
-        uses: andreas-ahman/find-comment@main
+        uses: peter-evans/find-comment@v1
         id: fc
         with:
           direction: last
