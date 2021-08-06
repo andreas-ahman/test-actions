@@ -20,10 +20,10 @@ jobs:
         with:
           direction: last
           issue-number: ${{ github.event.client_payload.github.payload.issue.number }}
-          body-includes: "check5"
+          body-includes: "check12 successfully deployed"
           #body-includes: ${{ github.event.client_payload.github.payload.slash_command.args.all }}
       - run: |
-          echo """${{ toJson(steps.fc.outputs) }}"""
+          echo """${{ toJson(steps.fc.outputs.comment-id) }}"""
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v1
         with:
@@ -41,3 +41,10 @@ jobs:
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           reaction-type: hooray
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.client_payload.pull_request.number }}
+          body: |
+            ${{ github.event.client_payload.github.payload.slash_command.args.all }} successfully deployed
+          reactions: rocket
