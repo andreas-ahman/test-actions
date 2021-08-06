@@ -6,14 +6,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Verify that feature only merges to develop and develop to production.
       - name: base
         run: |
           echo "${{ github.event.client_payload.pull_request.head.ref }}"
           echo "${{ github.event.client_payload.pull_request.base.ref }}"
           echo "${{ github.event.client_payload.slash_command.args.all }}"
-      - name: Validate cluster order
-        run: |
-          echo """${{ toJson(github) }}"""
+
+      # If develop to production and cluster != dev verify that previous env was successful
+      # unless override was passed in.
       - name: Find Comment
         uses: peter-evans/find-comment@v1
         id: fc
@@ -24,6 +25,8 @@ jobs:
           #body-includes: ${{ github.event.client_payload.github.payload.slash_command.args.all }}
       - run: |
           echo """${{ toJson(steps.fc.outputs.comment-id) }}"""
+
+      # Send update comment with +1 before starting to apply
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v1
         with:
@@ -31,20 +34,22 @@ jobs:
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           reaction-type: "+1"
-      - name: Validate cluster order
-        run: |
-          echo """${{ toJson(github.event) }}"""
-      - name: Add reaction
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          token: ${{ secrets.PAT }}
-          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
-          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
-          reaction-type: hooray
-      - name: Create comment
+
+      # Run the apply step
+
+      # Add successful comment if apply was successful
+      - name: Create success comment
         uses: peter-evans/create-or-update-comment@v1
         with:
           issue-number: ${{ github.event.client_payload.pull_request.number }}
           body: |
             ${{ github.event.client_payload.slash_command.args.all }} successfully deployed
-          reactions: rocket
+          reactions: hooray
+      # Add comment if it failed
+      - name: Create failed comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.client_payload.pull_request.number }}
+          body: |
+            ${{ github.event.client_payload.slash_command.args.all }} apply failed
+          reactions: confused
