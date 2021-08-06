@@ -23,7 +23,7 @@ jobs:
           body-includes: "check5"
           #body-includes: ${{ github.event.client_payload.github.payload.slash_command.args.all }}
       - run: |
-          echo ${{ steps.fc.outputs.comment-id }}
+          echo ${{ toJson(steps.fc.outputs) }}
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v1
         with:
