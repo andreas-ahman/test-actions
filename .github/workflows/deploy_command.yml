@@ -15,7 +15,7 @@ jobs:
         run: |
           echo """${{ toJson(github) }}"""
       - name: Find Comment
-        uses: peter-evans/find-comment@v1
+        uses: andreas-ahman/find-comment@main
         id: fc
         with:
           direction: last
@@ -25,7 +25,7 @@ jobs:
       - run: |
           echo """${{ toJson(steps.fc.outputs) }}"""
       - name: Add reaction
-        uses: andreas-ahman/create-or-update-comment@main
+        uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.PAT }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
