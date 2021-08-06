@@ -7,9 +7,23 @@ jobs:
     name: Validate merging order
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      uses: actions/checkout@master
     - name: step one
       run: echo "CLUSTER_NAME=${{ github.event.release.name }}" >> $GITHUB_ENV
     - name: verify cluster
       run:  jq -cr ".test[] | select(.==\"$CLUSTER_NAME\")" clusters.json
+    - name: verify branch
+      run: |
+        export tag=$(echo $TAG | cut -d '-' -f 2)
+        if [[ "$tag" == "$BRANCH" ]]; then
+          echo "OK, branch and tag match"
+        else
+          echo "Sorry No can do"
+          exit 1
+        fi
+      env:
+        TAG: ${{ github.event.release.tag_name }}
+        BRANCH: ${{ github.event.release.target_commitish}}
     - name: github
       run: echo """ ${{ toJson(github) }}"""
