@@ -7,7 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: base
-        run: echo "${{ github.event.client_payload.github.pull_request.base.ref }}"
+        run: |
+          echo "${{ github.event.client_payload.github.pull_request.base.ref }}"
+          echo "${{ github.event.client_payload.github.pull_request.head.ref }}"
       - name: Validate cluster order
         run: |
           echo """${{ toJson(github) }}"""      
