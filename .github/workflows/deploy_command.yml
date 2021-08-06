@@ -12,16 +12,22 @@ jobs:
           echo "${{ github.event.client_payload.pull_request.head.ref }}"
           echo "${{ github.event.client_payload.pull_request.base.ref }}"
           echo "${{ github.event.client_payload.slash_command.args.all }}"
-          echo "${{ toJson(github.event.client_payload.slash_command) }}
+          echo """${{ toJson(github.event.client_payload.slash_command) }}"""
       # If develop to production and cluster != dev verify that previous env was successful
       # unless override was passed in.
+      - name: set previous cluster
+        run: |
+          export CLUSTER=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
+          export OVERRIDE=${{ github.event.client_payload.slash_command.args.named.override }}
+          echo $CLUSTER
+          echo $OVERRIDE
       - name: Find Comment
         uses: peter-evans/find-comment@v1
         id: fc
         with:
           direction: last
           issue-number: ${{ github.event.client_payload.github.payload.issue.number }}
-          body-includes: "check12 successfully deployed"
+          body-includes: " successfully deployed"
           #body-includes: ${{ github.event.client_payload.github.payload.slash_command.args.all }}
       - run: |
           echo """${{ toJson(steps.fc.outputs.comment-id) }}"""
