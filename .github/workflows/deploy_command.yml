@@ -8,11 +8,7 @@ jobs:
     steps:
       - name: base
         run: |
-          echo "${{ toJson(github.event) }}"
-      - name: base2
-        run: |
-          echo "${{ toJson(github.event) }}"
-      
+          echo "${{ github.event.client_payload.pull_request.head.ref }}"
       - name: Validate cluster order
         run: |
           echo """${{ toJson(github) }}"""      
@@ -33,4 +29,3 @@ jobs:
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           reaction-type: hooray
-      
