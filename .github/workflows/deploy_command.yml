@@ -8,10 +8,10 @@ jobs:
     steps:
       - name: base
         run: |
-          echo "${{ joJson(github.event) }}"
+          echo "${{ toJson(github.event) }}"
       - name: base2
         run: |
-          echo "${{ joJson(github.event) }}"
+          echo "${{ toJson(github.event) }}"
       
       - name: Validate cluster order
         run: |
