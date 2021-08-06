@@ -16,4 +16,4 @@ jobs:
           commands: |
             deploy
           dispatch-type: repository
-          reactions: seen
+          reactions: eyes

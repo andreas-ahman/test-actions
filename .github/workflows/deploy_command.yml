@@ -8,7 +8,11 @@ jobs:
     steps:
       - name: base
         run: |
-          echo "${{ joJson(github.event.client_payload) }}"
+          echo "${{ joJson(github.event) }}"
+      - name: base2
+        run: |
+          echo "${{ joJson(github.event) }}"
+      
       - name: Validate cluster order
         run: |
           echo """${{ toJson(github) }}"""      
@@ -18,7 +22,7 @@ jobs:
           token: ${{ secrets.PAT }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
-          reaction-type: dispatched
+          reaction-type: rocket
       - name: Validate cluster order
         run: |
           echo """${{ toJson(github.event) }}"""
