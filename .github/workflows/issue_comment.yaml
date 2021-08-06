@@ -6,6 +6,8 @@ jobs:
   slashCommandDispatch:
     runs-on: ubuntu-latest
     steps:
+      - name: debug
+        run: echo """${{ toJson(github)}}"""
       - name: Slash Command Dispatch
         if: github.event.issue.pull_request
         uses: peter-evans/slash-command-dispatch@v2

@@ -15,7 +15,7 @@ on:
         description: 'Which cluster to deploy'
         required: true
 jobs:
-  deployInfrastructure:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Add reaction
