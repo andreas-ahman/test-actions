@@ -8,8 +8,7 @@ jobs:
     steps:
       - name: base
         run: |
-          echo "${{ github.event.client_payload.github.pull_request.base.ref }}"
-          echo "${{ github.event.client_payload.github.pull_request.head.ref }}"
+          echo "${{ joJson(github.event.client_payload) }}"
       - name: Validate cluster order
         run: |
           echo """${{ toJson(github) }}"""      
