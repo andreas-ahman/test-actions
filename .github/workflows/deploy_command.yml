@@ -10,7 +10,7 @@ jobs:
         run: |
           echo "${{ github.event.client_payload.pull_request.head.ref }}"
           echo "${{ github.event.client_payload.pull_request.base.ref }}"
-          echo "${{ github.event.client_payload.github.payload.slash_command.args.all }}"
+          echo "${{ github.event.client_payload.slash_command.args.all }}"
       - name: Validate cluster order
         run: |
           echo """${{ toJson(github) }}"""
@@ -46,5 +46,5 @@ jobs:
         with:
           issue-number: ${{ github.event.client_payload.pull_request.number }}
           body: |
-            ${{ github.event.client_payload.github.payload.slash_command.args.all }} successfully deployed
+            ${{ github.event.client_payload.slash_command.args.all }} successfully deployed
           reactions: rocket
