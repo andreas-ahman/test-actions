@@ -6,11 +6,8 @@ jobs:
   slashCommandDispatch:
     runs-on: ubuntu-latest
     steps:
-      - name: check values
-        run: |
-          echo """${{ toJson(github.event) }}"""
-          exit 1
       - name: Slash Command Dispatch
+        if: github.event.issue.pull_request
         uses: peter-evans/slash-command-dispatch@v2
         with:
           token: ${{ secrets.PAT }}
@@ -19,4 +16,5 @@ jobs:
           dispatch-type: workflow
           static-args: |
             repository=${{ github.repository }}
+            environment=${{ github.base_ref }}
             comment-id=${{ github.event.comment.id }}
