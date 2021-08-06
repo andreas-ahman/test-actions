@@ -1,30 +1,29 @@
 name: Deploy infrastructure changes
 on:
-  workflow_dispatch:
-    inputs:
-      repository:
-        description: 'The repository from which the slash command was dispatched'
-        required: true
-      comment-id:
-        description: 'The comment-id of the slash command'
-        required: true
-      environment:
-        description: 'To check if we're about to deploy to test or prod envs'
-        required: true
-      cluster:
-        description: 'Which cluster to deploy'
-        required: true
+  repository_dispatch:
+    types: [deploy-command]
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Validate cluster order
+        run: |
+          echo """${{ toJson(github) }}"""      
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.PAT }}
-          repository: ${{ github.event.inputs.repository }}
-          comment-id: ${{ github.event.inputs.comment-id }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           reaction-type: seen
       - name: Validate cluster order
         run: |
           echo """${{ toJson(github.event) }}"""
+      - name: Add reaction
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          reaction-type: hooray
+      

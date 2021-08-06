@@ -15,8 +15,4 @@ jobs:
           token: ${{ secrets.PAT }}
           commands: |
             deploy
-          dispatch-type: workflow
-          static-args: |
-            repository=${{ github.repository }}
-            environment=${{ github.base_ref }}
-            comment-id=${{ github.event.comment.id }}
+          dispatch-type: repository
