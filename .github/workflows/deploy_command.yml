@@ -6,6 +6,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Checkout the PR branch
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.client_payload.pull_request.head.ref }}
       # Verify that feature only merges to develop and develop to production.
       - name: base
         run: |
@@ -21,23 +27,61 @@ jobs:
           export CLUSTER=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
           export OVERRIDE=${{ github.event.client_payload.slash_command.args.named.override }}
           export ENVIRONMENT=$(echo ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }} | cut -d '-' -f 4)
-          echo $CLUSTER
-          echo $OVERRIDE
-          echo $ENVIRONMENT
-          if [[ "${{ github.event.client_payload.pull_request.base.ref }}" == "develop" ]] && [[ "$ENVIRONMENT" == "test" ]]; then
+          echo "CLUSTER=${CLUSTER}" >> $GITHUB_ENV
+          echo "OVERRIDE=${OVERRIDE}" >> $GITHUB_ENV
+          echo "ENVIRONMENT=${ENVIRONMENT}" >> $GITHUB_ENV
+
+          find ./terraform -name "*.tfvars" -exec grep $CLUSTER {} \; | grep $CLUSTER || export exists=1
+
+          if [[ "${{ github.event.client_payload.pull_request.base.ref }}" == "develop" ]] && [[ "$ENVIRONMENT" != "test" ]]; then
+            echo "::error::Not possible to deploy to environments other than test for PR opened against develop."
             exit 1
           fi
+          case ${ENVIRONMENT} in
+            "test")
+              echo "No lower env exists"
+              exit 0
+              ;;
+            "dev")
+              echo "No lower env exists"
+              exit 0
+              ;;
+            "stage")
+              echo "Dev is the previous environment"
+              export PREVIOUS_CLUSTER=$(echo $CLUSTER | awk -F- '{print $1 "-" $2 "-" $3 "-dev-" $5}')
+              echo "PREVIOUS_CLUSTER=$PREVIOUS_CLUSTER" >> $GITHUB_ENV
+              exit 0
+              ;;
+            "prod")
+              echo "Stage is the previous environment"
+              export PREVIOUS_CLUSTER=$(echo $CLUSTER | awk -F- '{print $1 "-" $2 "-" $3 "-stage-" $5}')
+              echo "PREVIOUS_CLUSTER=$PREVIOUS_CLUSTER" >> $GITHUB_ENV
+              exit 0
+              ;;
+            *)
+              echo "::error::Unforseen error in validation, no previous environment found"
+              exit 1
+              ;;
+          esac
       - name: Find Comment
         uses: peter-evans/find-comment@v1
         id: fc
         with:
           direction: last
           issue-number: ${{ github.event.client_payload.github.payload.issue.number }}
-          body-includes: " successfully deployed"
+          body-includes: "${env.PREVIOUS_CLUSTER} successfully deployed"
           #body-includes: ${{ github.event.client_payload.github.payload.slash_command.args.all }}
       - run: |
           echo """${{ toJson(steps.fc.outputs.comment-id) }}"""
-
+      - name: verify order
+        if: env.OVERRIDE != "" 
+        run: |
+          if [[ "${{steps.fc.outputs.comment-id}}" != "" ]]; then
+            echo "Previous installation was ok"
+          else
+            echo "::error::Unable to fix previous version applied correctly, aborting."
+            exit 1
+          fi
       # Send update comment with +1 before starting to apply
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v1
