@@ -9,16 +9,25 @@ jobs:
       - name: base
         run: |
           echo "${{ github.event.client_payload.pull_request.head.ref }}"
+          echo "${{ github.event.client_payload.pull_request.base.ref }}"
+          echo "${{ github.event.client_payload.github.payload.slash_command.args.all }}"
       - name: Validate cluster order
         run: |
-          echo """${{ toJson(github) }}"""      
+          echo """${{ toJson(github) }}"""
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        direction: last
+        with:
+          issue-number: ${{ github.event.client_payload.github.payload.issue.number }}
+          body-includes: "check5"
+          #body-includes: ${{ github.event.client_payload.github.payload.slash_command.args.all }}
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.PAT }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
-          reaction-type: rocket
+          reaction-type: "+1"
       - name: Validate cluster order
         run: |
           echo """${{ toJson(github.event) }}"""
