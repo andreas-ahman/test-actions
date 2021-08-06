@@ -19,5 +19,4 @@ jobs:
           dispatch-type: workflow
           static-args: |
             repository=${{ github.repository }}
-            environment=${{}}
             comment-id=${{ github.event.comment.id }}
