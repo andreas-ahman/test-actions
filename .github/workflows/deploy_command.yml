@@ -16,8 +16,8 @@ jobs:
           echo """${{ toJson(github) }}"""
       - name: Find Comment
         uses: peter-evans/find-comment@v1
-        direction: last
         with:
+          direction: last
           issue-number: ${{ github.event.client_payload.github.payload.issue.number }}
           body-includes: "check5"
           #body-includes: ${{ github.event.client_payload.github.payload.slash_command.args.all }}
