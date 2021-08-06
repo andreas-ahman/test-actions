@@ -12,7 +12,7 @@ jobs:
           echo "${{ github.event.client_payload.pull_request.head.ref }}"
           echo "${{ github.event.client_payload.pull_request.base.ref }}"
           echo "${{ github.event.client_payload.slash_command.args.all }}"
-
+          echo "${{ toJson(github.event.client_payload.slash_command) }}
       # If develop to production and cluster != dev verify that previous env was successful
       # unless override was passed in.
       - name: Find Comment
