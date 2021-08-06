@@ -74,7 +74,7 @@ jobs:
       - run: |
           echo """${{ toJson(steps.fc.outputs.comment-id) }}"""
       - name: verify order
-        if: env.OVERRIDE != "" 
+        if: env.OVERRIDE != 'true'
         run: |
           if [[ "${{steps.fc.outputs.comment-id}}" != "" ]]; then
             echo "Previous installation was ok"
