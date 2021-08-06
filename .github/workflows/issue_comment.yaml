@@ -9,6 +9,7 @@ jobs:
       - name: check values
         run: |
           echo """${{ toJson(github.event) }}"""
+          echo "hh"
           exit 1
       - name: Slash Command Dispatch
         uses: peter-evans/slash-command-dispatch@v2
