@@ -13,9 +13,12 @@ jobs:
           repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
           ref: ${{ github.event.client_payload.pull_request.head.ref }}
       # Verify that feature only merges to develop and develop to production.
-      - name: base
+      - name: Verify branch order
         run: |
-          ls -lah
+          if [[ "${{ github.event.client_payload.pull_request.base.ref }}" == "develop" ]] && [[ "$ENVIRONMENT" != "test" ]]; then
+            echo "::error::Not possible to deploy to environments other than test for PR opened against develop."
+            exit 1
+          fi
       # If develop to production and cluster != dev verify that previous env was successful
       # unless override was passed in.
       # Also block deploy to test if base.ref == production
@@ -24,16 +27,17 @@ jobs:
           export CLUSTER=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
           export OVERRIDE=${{ github.event.client_payload.slash_command.args.named.override }}
           export ENVIRONMENT=$(echo ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }} | cut -d '-' -f 4)
+          export TF_CLUSTER=$(echo ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }} | cut -d '-' -f 1-3)
           echo "CLUSTER=${CLUSTER}" >> $GITHUB_ENV
           echo "OVERRIDE=${OVERRIDE}" >> $GITHUB_ENV
           echo "ENVIRONMENT=${ENVIRONMENT}" >> $GITHUB_ENV
 
-          find ./terraform -name "*.tfvars" -exec grep $CLUSTER {} \; | grep $CLUSTER || export exists=1
-
-          if [[ "${{ github.event.client_payload.pull_request.base.ref }}" == "develop" ]] && [[ "$ENVIRONMENT" != "test" ]]; then
-            echo "::error::Not possible to deploy to environments other than test for PR opened against develop."
+          find ./terraform/$TF_CLUSTER -name "*.tfvars" -exec grep $CLUSTER {} \; | grep $CLUSTER || export exists=1
+          if [[ "$exists" != "1" ]]; then
+            echo "::error::Unable to find cluster defined in any terraform files, aborting!"
             exit 1
           fi
+          
           case ${ENVIRONMENT} in
             "test")
               echo "No lower env exists"
@@ -60,7 +64,7 @@ jobs:
               exit 1
               ;;
           esac
-      - name: Find Comment
+      - name: Find previous deployment
         uses: peter-evans/find-comment@v1
         id: fc
         with:
@@ -68,8 +72,6 @@ jobs:
           issue-number: ${{ github.event.client_payload.github.payload.issue.number }}
           body-includes: "${env.PREVIOUS_CLUSTER} successfully deployed"
           #body-includes: ${{ github.event.client_payload.github.payload.slash_command.args.all }}
-      - run: |
-          echo """${{ toJson(steps.fc.outputs.comment-id) }}"""
       - name: verify order
         if: env.OVERRIDE != 'true'
         run: |
