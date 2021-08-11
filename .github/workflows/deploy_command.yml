@@ -73,11 +73,12 @@ jobs:
         with:
           direction: last
           issue-number: ${{ github.event.client_payload.github.payload.issue.number }}
-          body-includes: "successfully deployed"
+          body-includes: "${{env.PREVIOUS_CLUSTER}} successfully deployed"
           #body-includes: ${{ github.event.client_payload.github.payload.slash_command.args.all }}
       - name: debug
         run: |
-          echo """${{ steps.fc.outputs.comment-body}}""" 
+          echo ${{ github.event.client_payload.github.payload.issue.number }}
+          echo """${{ steps.fc.outputs.comment-body}}"""
       - name: verify order
         if: env.OVERRIDE != 'true'
         run: |
