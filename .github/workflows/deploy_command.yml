@@ -12,13 +12,6 @@ jobs:
           token: ${{ secrets.PAT }}
           repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
           ref: ${{ github.event.client_payload.pull_request.head.ref }}
-      # Verify that feature only merges to develop and develop to production.
-      - name: Verify branch order
-        run: |
-          if [[ "${{ github.event.client_payload.pull_request.base.ref }}" == "develop" ]] && [[ "$ENVIRONMENT" != "test" ]]; then
-            echo "::error::Not possible to deploy to environments other than test for PR opened against develop."
-            exit 1
-          fi
       # If develop to production and cluster != dev verify that previous env was successful
       # unless override was passed in.
       # Also block deploy to test if base.ref == production
@@ -67,6 +60,13 @@ jobs:
               exit 1
               ;;
           esac
+      # Verify that feature only merges to develop and develop to production.
+      - name: Verify branch order
+        run: |
+          if [[ "${{ github.event.client_payload.pull_request.base.ref }}" == "develop" ]] && [[ "$ENVIRONMENT" != "test" ]]; then
+            echo "::error::Not possible to deploy to environments other than test for PR opened against develop."
+            exit 1
+          fi
       - name: Find previous deployment
         uses: peter-evans/find-comment@v1
         id: fc
