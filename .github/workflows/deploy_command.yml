@@ -28,7 +28,8 @@ jobs:
           fi
           echo "ENVIRONMENT=${ENVIRONMENT}" >> $GITHUB_ENV
 
-          find ./terraform/$TF_CLUSTER -name "*.tfvars" -exec grep $CLUSTER {} \; | grep $CLUSTER || export exists=1
+          grep $CLUSTER ./terraform/$TF_CLUSTER/$ENVIRONMENT.tfvars || export exists=1
+          
           if [[ "$exists" == "1" ]]; then
             echo "::error::Unable to find cluster defined in any terraform files, aborting!"
             exit 1
