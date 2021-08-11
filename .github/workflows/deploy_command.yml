@@ -87,9 +87,9 @@ jobs:
             exit 0
           fi
           if [[ "${{steps.fc.outputs.comment-id}}" != "" ]]; then
-            echo "Previous installation was ok! Proceeding"
+            echo "Previous cluster ${PREVIOUS_CLUSTER} was ok! Proceeding"
           else
-            echo "::error::Previous version not applied correctly, aborting."
+            echo "::error::Previous cluster ${PREVIOUS_CLUSTER} not applied correctly, aborting."
             exit 1
           fi
       # Send update comment with +1 before starting to apply
