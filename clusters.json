@@ -1,6 +1,0 @@
-{
-  "test": ["ccoe-europe-west4"],
-  "dev": ["ccoe-europe-west4"],
-  "stage": ["ccoe-europe-west4"],
-  "prod": ["ccoe-europe-west4"]
-}
