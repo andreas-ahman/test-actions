@@ -51,4 +51,4 @@ jobs:
         run: |
           echo "${CLUSTER}"
         env:
-          CLUSTER: ${{ matrix.clusters }}
+          CLUSTER: ${{ toJson(matrix.clusters) }}
