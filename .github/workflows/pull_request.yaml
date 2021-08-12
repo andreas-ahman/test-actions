@@ -26,7 +26,7 @@ jobs:
         #  echo "::error::Not allowed to run this pipeline against any other branches than develop and production"
         #  exit 1
         #fi
-        export CLUSTERS=$(jq -cr '[.[] | select(.dev or .stage or .prod)]' clusters.json)
+        export CLUSTERS=$(jq -cr '[.[] | select(.env |inside("dev","stage")).cluster]' clusters.json)
         echo "CLUSTERS=${CLUSTERS}" >> $GITHUB_ENV
           
     - id: set-matrix
@@ -51,4 +51,4 @@ jobs:
         run: |
           echo "${CLUSTER}"
         env:
-          CLUSTER: ${{ toJson(matrix.clusters) }}
+          CLUSTER: ${{ matrix.clusters }}

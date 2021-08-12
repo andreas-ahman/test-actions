@@ -1,17 +1,27 @@
 [
     {
-        "test": "ccoe-europe-west4"
+        "env": "test",
+        "terraform": "ccoe-europe-west4",
+        "cluster": "ccoe-europe-west4-test-1"
     },
     {
-        "test": "ccoe-us-central1"
+        "env": "test",
+        "terraform": "ccoe-us-central1",
+        "cluster": "ccoe-us-central1-test-1"
     },
     {
-        "dev": "ccoe-europe-west4"
+        "env": "dev",
+        "terraform": "ccoe-europe-west4",
+        "cluster": "ccoe-europe-west4-dev-1"
     },
     {
-        "stage": "ccoe-europe-west4"
+        "env": "stage",
+        "terraform": "ccoe-europe-west4",
+        "cluster": "ccoe-europe-west4-stage-1"
     },
     {
-        "prod": "ccoe-europe-west4"
+        "env": "prod",
+        "terraform": "ccoe-europe-west4",
+        "cluster": "ccoe-europe-west4-prod-1"
     }
 ]
