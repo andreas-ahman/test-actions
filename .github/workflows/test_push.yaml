@@ -1,0 +1,9 @@
+name: 'Terraform Plan Stage (PR)'
+on:
+  - push
+jobs:
+  create-matrix:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout'
+      run: echo "Running"

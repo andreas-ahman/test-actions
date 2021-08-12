@@ -20,7 +20,7 @@ jobs:
           export CLUSTER=${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
           export OVERRIDE=${{ github.event.client_payload.slash_command.args.named.override }}
           export ENVIRONMENT=$(echo ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }} | cut -d '-' -f 4)
-          export TF_CLUSTER=$(echo ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }} | cut -d '-' -f 1-3)
+          export TERRAFORM=$(echo ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }} | cut -d '-' -f 1-3)
           echo "CLUSTER=${CLUSTER}" >> $GITHUB_ENV
           if [[ "$OVERRIDE" == "true" ]]; then
             echo "Override set, will not check previous installations."
@@ -28,7 +28,7 @@ jobs:
           fi
           echo "ENVIRONMENT=${ENVIRONMENT}" >> $GITHUB_ENV
 
-          grep $CLUSTER ./terraform/$TF_CLUSTER/$ENVIRONMENT.tfvars || export exists=1
+          grep $CLUSTER ./terraform/$TERRAFORM/$ENVIRONMENT.tfvars || export exists=1
           
           if [[ "$exists" == "1" ]]; then
             echo "::error::Unable to find cluster defined in any terraform files, aborting!"
@@ -102,7 +102,36 @@ jobs:
           reaction-type: "+1"
 
       # Run the apply step
-
+      - name: Setup GCloud
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '347.0.0'
+          service_account_key: ${{ secrets.SECRET_MANAGER_KEY }}
+      - name: Prepare terraform backend config
+        run: |
+          echo bucket\ =\ \"${TERRAFORM}-${ENVIRONMENT}-tf\" > terraform/${TERRAFORM}/backend.tfvars
+      - name: Get GKE service accounts
+        run: |
+          gcloud secrets versions access latest \
+            --secret="tf-gke-${ENVIRONMENT}" \
+            --project=${CONFIG_PROJECT} | base64 --decode > sa.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/sa.json" >> $GITHUB_ENV
+      - name: 'Terraform Setup'
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - name: 'Terraform Init'
+        id: tf_init
+        run: terraform init -backend-config=backend.tfvars
+        working-directory: './terraform/${{env.TERRAFORM}}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Terraform Apply'
+        id: tf_apply
+        run: terraform apply -auto-approve -var-file=${{env.ENVIRONMENT}}.tfvars
+        working-directory: './terraform/${{env.TERRAFORM}}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Add successful comment if apply was successful
       - name: Create success comment
         if: success()
