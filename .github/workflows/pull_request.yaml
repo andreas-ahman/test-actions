@@ -1,0 +1,55 @@
+name: 'Terraform Plan Stage (PR)'
+on:
+  - push
+env:
+  CONFIG_PROJECT: ${{ secrets.CONFIG_PROJECT }}
+  BASE_REF: ${{ github.base_ref }}
+  TF_VERSION: 0.13.5
+jobs:
+  create-matrix:
+    needs: validate
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      build_cluster: ${{ steps.set-matrix.outputs.build_cluster }}
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v2
+    - name: Set environments
+      run: |
+        #if [[ "${{ github.base_ref }}" == "develop" ]]; then
+        #  export CLUSTERS=$(jq -cr '[.[] | select(.test)]' clusters.json)
+        #  echo "CLUSTERS=${CLUSTERS}" >> $GITHUB_ENV
+        #elif [[ "${{ github.base_ref }}" == "production" ]]; then
+        #  export CLUSTERS=$(jq -cr '[.[] | select(.dev or .stage or .prod)]' clusters.json)
+        #  echo "CLUSTERS=${CLUSTERS}" >> $GITHUB_ENV
+        #else
+        #  echo "::error::Not allowed to run this pipeline against any other branches than develop and production"
+        #  exit 1
+        #fi
+        export CLUSTERS=$(jq -cr '[.[] | select(.dev or .stage or .prod)]' clusters.json)
+        echo "CLUSTERS=${CLUSTERS}" >> $GITHUB_ENV
+          
+    - id: set-matrix
+      run: |
+        if [ "$CLUSTERS" = null ]; then
+          echo "::set-output name=matrix::{\"clusters\": [\"false\"]}"
+          echo "::set-output name=build_cluster::\"false\""
+        else
+          echo "::set-output name=matrix::{\"clusters\": ${CLUSTERS}}"
+          echo "::set-output name=build_cluster::\"true\""
+        fi
+  terraform:
+    needs: create-matrix
+    if: contains(needs.create-matrix.outputs.build_cluster, 'true')
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.create-matrix.outputs.matrix) }}
+    steps:
+      - name: 'Check cluster env  '
+        run: |
+          echo "${CLUSTER}"
+        env:
+          CLUSTER: ${{ matrix.clusters }}

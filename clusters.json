@@ -1,0 +1,17 @@
+[
+    {
+        "test": "ccoe-europe-west4"
+    },
+    {
+        "test": "ccoe-us-central1"
+    },
+    {
+        "dev": "ccoe-europe-west4"
+    },
+    {
+        "stage": "ccoe-europe-west4"
+    },
+    {
+        "prod": "ccoe-europe-west4"
+    }
+]
