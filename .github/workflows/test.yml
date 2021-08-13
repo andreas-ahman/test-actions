@@ -15,7 +15,7 @@ jobs:
         for value in $(jq -j '.[] | "\(.name):\(.id)\n"' metrics/dashboardgroups.json); do
           name=$(echo $value | cut -d ':' -f 1)
           id=$(echo $value | cut -d ':' -f 2)
-          curl -H "X-SF-TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/dashboardgroup/${id}/export > metrics/${name}.json
+          curl -H "X-SF-TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/dashboardgroup/${id}/export > "metrics/${name}.json"
         done
     - name: Commit changes
       uses: actions-js/push@v1
