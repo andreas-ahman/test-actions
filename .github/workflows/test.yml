@@ -10,8 +10,15 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@master
+      with:
+        fetch-depth: 0
     - name: get dashboard
       run: |
         for group in $(cat dashboardgroups); do 
-          curl -H "X_SF_TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/dashboardgroup/${group}/export > ${group}.json
+          curl -H "X_SF_TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/dashboardgroup/${group}/export > metrics/${group}.json
         done
+    - name: Commit changes
+      uses: actions-js/push@v1
+      with:
+        message: 'Automatically fetched changes: ${date}'
+        directory: metrics
