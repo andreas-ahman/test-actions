@@ -12,9 +12,10 @@ jobs:
         fetch-depth: 0
     - name: Get dashboards
       run: |
-        for value in $(jq -j '.[] | "\(.name):\(.id)\n"' metrics/dashboardgroups.json); do
-          name=$(echo $value | cut -d ':' -f 1)
-          id=$(echo $value | cut -d ':' -f 2)
+        IFS=','; for value in $(jq -j '.[] | "\(.name):\(.id)\n"' metrics/dashboardgroups.json); do
+          export name=$(echo $value | cut -d ':' -f 1)
+          export id=$(echo $value | cut -d ':' -f 2)
+        done
           curl -H "X-SF-TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/dashboardgroup/${id}/export > "metrics/${name}.json"
         done
     - name: Commit changes
