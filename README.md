@@ -15,9 +15,13 @@ The feature is then merged to the develop branch and then finally to production.
 
 ### Deploying changes
 
-When you raise a PR.
+Create a PR for the env you intend to deploy.
 
-### Deploying changes
+For managing deployments we're using the [Slash Command Dispatch Action](https://github.com/peter-evans/slash-command-dispatch)
+
+To deploy changes simply comment the PR with like this:
+
+* /deploy ccoe-europe-west4-test-1
 
 ## Terraform
 
