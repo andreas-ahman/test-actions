@@ -13,20 +13,19 @@ jobs:
     - name: Get dashboards
       run: |
         [ ! -d "metrics/dashboards" ] && mkdir metrics/dashboards
-        IFS=','; for value in $(jq -j '.[] | "\(.name):\(.id)\n"' metrics/dashboardgroups.json); do
+        IFS='#'; for value in $(jq -j '.[] | "\(.name):\(.id)#"' metrics/dashboardgroups.json); do
           export name=$(echo $value | cut -d ':' -f 1)
-          export id=$(echo $value | cut -d ':' -f 2)
+          export id=$(echo $value | cut -d ':' -f 2 | tr -d '\n')
           curl -H "X-SF-TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/dashboardgroup/${id}/export > "metrics/dashboards/${name}.json"
         done
     - name: Get detectors
       run: |
         [ ! -d "metrics/detectors" ] && mkdir metrics/detectors
-        IFS=','; for value in $(jq -j '.[] | "\(.name):\(.id)\n"' metrics/detectors.json); do
+        IFS='#'; for value in $(jq -j '.[] | "\(.name):\(.id)#"' metrics/detectors.json); do
           export name=$(echo $value | cut -d ':' -f 1)
-          export id=$(echo $value | cut -d ':' -f 2)
-          curl -H "X-SF-TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" "https://ingka.signalfx.com/v2/detector?id=${id}" > "metrics/detectors/${name}.json"
+          export id=$(echo $value | cut -d ':' -f 2 | tr -d '\n')
+          curl -H "X-SF-TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/detector/${id} > "metrics/detectors/${name}.json"
         done
-
     - name: Commit changes
       uses: actions-js/push@v1
       with:
