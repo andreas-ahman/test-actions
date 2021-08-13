@@ -15,8 +15,10 @@ jobs:
     - name: get dashboard
       run: |
         for group in $(cat metrics/dashboardgroups); do 
-          curl -H "X_SF_TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/dashboardgroup/${group}/export > metrics/${group}.json
+          curl -H "X_SF_TOKEN: ${SIGNALFX_TOKEN}" https://ingka.signalfx.com/v2/dashboardgroup/${group}/export > metrics/${group}.json
         done
+      env:
+        SIGNALFX_TOKEN: ${{ secrets.SIGNALFX_TOKEN }}
     - name: Commit changes
       uses: actions-js/push@v1
       with:
