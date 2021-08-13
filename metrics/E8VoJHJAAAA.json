@@ -1,0 +1,15 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<title>Error 401 Unauthorized</title>
+</head>
+<body><h2>HTTP ERROR 401 Unauthorized</h2>
+<table>
+<tr><th>URI:</th><td>/v2/dashboardgroup/E8VoJHJAAAA/export</td></tr>
+<tr><th>STATUS:</th><td>401</td></tr>
+<tr><th>MESSAGE:</th><td>Unauthorized</td></tr>
+<tr><th>SERVLET:</th><td>org.glassfish.jersey.servlet.ServletContainer-c51df78</td></tr>
+</table>
+
+</body>
+</html>
