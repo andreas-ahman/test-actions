@@ -10,10 +10,10 @@ jobs:
       uses: actions/checkout@master
       with:
         fetch-depth: 0
-    - name: get dashboard
+    - name: Get dashboards
       run: |
-        for group in $(cat metrics/dashboardgroups); do 
-          curl -H "X-SF-TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/dashboardgroup/${group}/export > metrics/${group}.json
+        for name id in $(jq -j '.[] | "\(.name) \(.id)\n"' metrics/dashboardgroups.json); do
+          curl -H "X-SF-TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/dashboardgroup/${id}/export > metrics/${name}.json
         done
     - name: Commit changes
       uses: actions-js/push@v1
