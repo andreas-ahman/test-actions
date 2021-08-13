@@ -1,29 +1,17 @@
 name: Build and Deploy to GKE
 on:
-  release:
-    types: [published]
+  - push
+env:
+  ENDPOINT: https://api.eu0.signalfx.com.
 jobs:
-  validate:
-    name: Validate merging order
+  getDashboard:
+    name: Download dasboard
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@master
-    - name: step one
-      run: echo "CLUSTER_NAME=${{ github.event.release.name }}" >> $GITHUB_ENV
-    - name: verify cluster
-      run:  jq -cr ".test[] | select(.==\"$CLUSTER_NAME\")" clusters.json
-    - name: verify branch
+    - name: get dashboard
       run: |
-        export tag=$(echo $TAG | cut -d '-' -f 2)
-        if [[ "$tag" == "$BRANCH" ]]; then
-          echo "OK, branch and tag match"
-        else
-          echo "Sorry No can do"
-          exit 1
-        fi
-      env:
-        TAG: ${{ github.event.release.tag_name }}
-        BRANCH: ${{ github.event.release.target_commitish}}
-    - name: github
-      run: echo """ ${{ toJson(github) }}"""
+        for group in $(cat dashboardgroups); do 
+          curl -H "X_SF_TOKEN: ${{ secrets.SIGNALFX_TOKEN }}" https://ingka.signalfx.com/v2/dashboardgroup/${group}/export > ${group}.json
+        done
