@@ -1,0 +1,57 @@
+{
+  "authorizedWriters" : {
+    "teams" : [ ],
+    "users" : [ ]
+  },
+  "created" : 1625053813154,
+  "creator" : "Eilz2PSAEAA",
+  "customProperties" : { },
+  "description" : "",
+  "id" : "E5IIlRQAEAA",
+  "labelResolutions" : {
+    "Servicemesh - RPC requests Detector" : 10000
+  },
+  "lastUpdated" : 1628598113644,
+  "lastUpdatedBy" : "Eilz2PSAEAA",
+  "maxDelay" : 0,
+  "minDelay" : 0,
+  "name" : "Servicemesh - RPC requests Detector",
+  "overMTSLimit" : false,
+  "packageSpecifications" : "signalfx==0.1.8",
+  "programText" : "from signalfx.detectors.against_recent import against_recent\nA = data('gauge.consul.client.rpc', filter=filter('plugin', 'consul') and filter('consul_mode', 'client')).publish(label='A')\nagainst_recent.detector_growth_rate_vanilla(stream=A, current_window='10m', historical_window='1h', fire_growth_rate_threshold=0.5, clear_growth_rate_threshold=0.3, orientation='above', calculation_mode='vanilla').publish('Servicemesh - RPC requests Detector')",
+  "rules" : [ {
+    "description" : "All the values of gauge.consul.client.rpc in the last 10m are more than 50% above the mean of its preceding 1h.",
+    "detectLabel" : "Servicemesh - RPC requests Detector",
+    "disabled" : false,
+    "notifications" : [ {
+      "type" : "Team",
+      "team" : "Emh26qmAEAA"
+    } ],
+    "parameterizedBody" : "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\nMinimum value of signal in the last {{event_annotations.current_window}}: {{inputs.recent_min.value}}\n{{#if anomalous}}Trigger threshold: {{inputs.f_top.value}}\n{{else}}Clear threshold: {{inputs.c_top.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+    "parameterizedSubject" : null,
+    "runbookUrl" : null,
+    "severity" : "Critical",
+    "tip" : null
+  } ],
+  "tags" : [ ],
+  "teams" : [ "Emh26qmAEAA" ],
+  "timezone" : "",
+  "visualizationOptions" : {
+    "disableSampling" : false,
+    "publishLabelOptions" : [ {
+      "displayName" : "gauge.consul.client.rpc",
+      "label" : "A",
+      "paletteIndex" : null,
+      "valuePrefix" : null,
+      "valueSuffix" : null,
+      "valueUnit" : null
+    } ],
+    "showDataMarkers" : true,
+    "showEventLines" : false,
+    "time" : {
+      "range" : 86400000,
+      "rangeEnd" : 0,
+      "type" : "relative"
+    }
+  }
+}

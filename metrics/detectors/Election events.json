@@ -1,0 +1,64 @@
+{
+  "authorizedWriters" : {
+    "teams" : [ ],
+    "users" : [ ]
+  },
+  "created" : 1625052999866,
+  "creator" : "Eilz2PSAEAA",
+  "customProperties" : { },
+  "description" : "",
+  "id" : "E5IFqyTAAAA",
+  "labelResolutions" : {
+    "Servicemesh - Election events Detector" : 1000
+  },
+  "lastUpdated" : 1628598081091,
+  "lastUpdatedBy" : "Eilz2PSAEAA",
+  "maxDelay" : 0,
+  "minDelay" : 0,
+  "name" : "Servicemesh - Election events Detector",
+  "overMTSLimit" : false,
+  "packageSpecifications" : "",
+  "programText" : "A = data('gauge.consul.raft.state.candidate').mean(over='1m').publish(label='A')\nB = data('gauge.consul.raft.state.leader').mean(over='1m').publish(label='B')\ndetect((when(A > threshold(0), lasting='1m')) or (when(B > threshold(0), lasting='1m')), auto_resolve_after='5m').publish('Servicemesh - Election events Detector')",
+  "rules" : [ {
+    "description" : "The value of gauge.consul.raft.state.candidate - Mean(1m) is above 0 OR The value of gauge.consul.raft.state.leader - Mean(1m) is above 0.",
+    "detectLabel" : "Servicemesh - Election events Detector",
+    "disabled" : false,
+    "notifications" : [ {
+      "type" : "Team",
+      "team" : "Emh26qmAEAA"
+    } ],
+    "parameterizedBody" : "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for gauge.consul.raft.state.candidate - Mean(1m): {{inputs.A.value}}\n{{else}}Current signal value for gauge.consul.raft.state.candidate - Mean(1m): {{inputs.A.value}}\n{{/if}}\n\n\n{{#if anomalous}}Signal value for gauge.consul.raft.state.leader - Mean(1m): {{inputs.B.value}}\n{{else}}Current signal value for gauge.consul.raft.state.leader - Mean(1m): {{inputs.B.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+    "parameterizedSubject" : null,
+    "runbookUrl" : null,
+    "severity" : "Critical",
+    "tip" : null
+  } ],
+  "tags" : [ ],
+  "teams" : [ "Emh26qmAEAA" ],
+  "timezone" : "",
+  "visualizationOptions" : {
+    "disableSampling" : false,
+    "publishLabelOptions" : [ {
+      "displayName" : "gauge.consul.raft.state.candidate - Mean(1m)",
+      "label" : "A",
+      "paletteIndex" : null,
+      "valuePrefix" : null,
+      "valueSuffix" : null,
+      "valueUnit" : null
+    }, {
+      "displayName" : "gauge.consul.raft.state.leader - Mean(1m)",
+      "label" : "B",
+      "paletteIndex" : null,
+      "valuePrefix" : null,
+      "valueSuffix" : null,
+      "valueUnit" : null
+    } ],
+    "showDataMarkers" : true,
+    "showEventLines" : false,
+    "time" : {
+      "range" : 2678400000,
+      "rangeEnd" : 0,
+      "type" : "relative"
+    }
+  }
+}

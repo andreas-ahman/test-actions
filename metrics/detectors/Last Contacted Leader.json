@@ -1,0 +1,57 @@
+{
+  "authorizedWriters" : {
+    "teams" : [ ],
+    "users" : [ ]
+  },
+  "created" : 1624947703714,
+  "creator" : "Eilz2PSAEAA",
+  "customProperties" : { },
+  "description" : "",
+  "id" : "E5BzeOiAEAA",
+  "labelResolutions" : {
+    "Servicemesh - Last Contacted Leader Detector" : 10000
+  },
+  "lastUpdated" : 1628598099862,
+  "lastUpdatedBy" : "Eilz2PSAEAA",
+  "maxDelay" : null,
+  "minDelay" : null,
+  "name" : "Servicemesh - Last Contacted Leader Detector",
+  "overMTSLimit" : false,
+  "packageSpecifications" : "",
+  "programText" : "A = data('gauge.consul.raft.leader.lastContact.avg').publish(label='A')\ndetect(when(A > threshold(200), lasting='5m')).publish('Servicemesh - Last Contacted Leader Detector')",
+  "rules" : [ {
+    "description" : "The value of gauge.consul.raft.leader.lastContact.avg is above 200 for 5m.",
+    "detectLabel" : "Servicemesh - Last Contacted Leader Detector",
+    "disabled" : false,
+    "notifications" : [ {
+      "type" : "Team",
+      "team" : "Emh26qmAEAA"
+    } ],
+    "parameterizedBody" : "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}\nCulprit datacenter: {{{dimensions.datacenter}}}\n{{/if}}\n\n\n{{#if anomalous}}Signal value for gauge.consul.raft.leader.lastContact.avg: {{inputs.A.value}}\n{{else}}Current signal value for gauge.consul.raft.leader.lastContact.avg: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+    "parameterizedSubject" : "{{ruleSeverity}} Alert: {{{ruleName}}}",
+    "runbookUrl" : "",
+    "severity" : "Major",
+    "tip" : ""
+  } ],
+  "tags" : [ ],
+  "teams" : [ "Emh26qmAEAA" ],
+  "timezone" : "",
+  "visualizationOptions" : {
+    "disableSampling" : false,
+    "publishLabelOptions" : [ {
+      "displayName" : "gauge.consul.raft.leader.lastContact.avg",
+      "label" : "A",
+      "paletteIndex" : null,
+      "valuePrefix" : null,
+      "valueSuffix" : null,
+      "valueUnit" : "Millisecond"
+    } ],
+    "showDataMarkers" : true,
+    "showEventLines" : false,
+    "time" : {
+      "range" : 86400000,
+      "rangeEnd" : 0,
+      "type" : "relative"
+    }
+  }
+}

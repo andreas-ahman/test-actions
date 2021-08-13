@@ -1,0 +1,57 @@
+{
+  "authorizedWriters" : {
+    "teams" : [ ],
+    "users" : [ ]
+  },
+  "created" : 1624948586177,
+  "creator" : "Eilz2PSAEAA",
+  "customProperties" : { },
+  "description" : "",
+  "id" : "E5B2bQZAIAA",
+  "labelResolutions" : {
+    "Servicemesh - Raft candidate state Detector" : 1000
+  },
+  "lastUpdated" : 1628598001179,
+  "lastUpdatedBy" : "Eilz2PSAEAA",
+  "maxDelay" : 0,
+  "minDelay" : 0,
+  "name" : "Servicemesh - Raft candidate state Detector",
+  "overMTSLimit" : false,
+  "packageSpecifications" : "",
+  "programText" : "A = data('gauge.consul.raft.state.candidate', filter=filter('consul_mode', 'server')).count().sum(over='10s').publish(label='A')\ndetect(when(A > threshold(0), lasting='1m')).publish('Servicemesh - Raft candidate state Detector')",
+  "rules" : [ {
+    "description" : "The value of consul.raft.state.candidate is above 0.",
+    "detectLabel" : "Servicemesh - Raft candidate state Detector",
+    "disabled" : false,
+    "notifications" : [ {
+      "type" : "Team",
+      "team" : "Emh26qmAEAA"
+    } ],
+    "parameterizedBody" : "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for consul.raft.state.candidate: {{inputs.A.value}}\n{{else}}Current signal value for consul.raft.state.candidate: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+    "parameterizedSubject" : "{{ruleSeverity}} Alert: {{{ruleName}}}",
+    "runbookUrl" : null,
+    "severity" : "Critical",
+    "tip" : null
+  } ],
+  "tags" : [ ],
+  "teams" : [ "Emh26qmAEAA" ],
+  "timezone" : "",
+  "visualizationOptions" : {
+    "disableSampling" : false,
+    "publishLabelOptions" : [ {
+      "displayName" : "consul.raft.state.candidate",
+      "label" : "A",
+      "paletteIndex" : null,
+      "valuePrefix" : null,
+      "valueSuffix" : null,
+      "valueUnit" : null
+    } ],
+    "showDataMarkers" : true,
+    "showEventLines" : false,
+    "time" : {
+      "range" : 900000,
+      "rangeEnd" : 0,
+      "type" : "relative"
+    }
+  }
+}

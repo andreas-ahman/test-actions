@@ -1,0 +1,71 @@
+{
+  "authorizedWriters" : {
+    "teams" : [ ],
+    "users" : [ ]
+  },
+  "created" : 1625052466953,
+  "creator" : "Eilz2PSAEAA",
+  "customProperties" : { },
+  "description" : "",
+  "id" : "E5IDk1IAEAA",
+  "labelResolutions" : {
+    "Servicemesh - Garbage collection ns / minute Detector" : 10000,
+    "Servicemesh - Garbage collector more than 5s / minute" : 10000
+  },
+  "lastUpdated" : 1628598090593,
+  "lastUpdatedBy" : "Eilz2PSAEAA",
+  "maxDelay" : 0,
+  "minDelay" : 0,
+  "name" : "Servicemesh - Garbage collection ns / minute Detector",
+  "overMTSLimit" : false,
+  "packageSpecifications" : "",
+  "programText" : "A = data('gauge.consul.runtime.total_gc_pause_ns').delta().above(0, inclusive=True).sum(over='1m').publish(label='A')\ndetect(when(A > threshold(2000000000), lasting='5m')).publish('Servicemesh - Garbage collection ns / minute Detector')\ndetect(when(A > threshold(5000000000), lasting='2m')).publish('Servicemesh - Garbage collector more than 5s / minute')",
+  "rules" : [ {
+    "description" : "The value of gauge.consul.runtime.total_gc_pause_ns - Delta - Exclude x < 0 - Sum(1m) is above 2000000000.",
+    "detectLabel" : "Servicemesh - Garbage collection ns / minute Detector",
+    "disabled" : false,
+    "notifications" : [ {
+      "type" : "Team",
+      "team" : "Emh26qmAEAA"
+    } ],
+    "parameterizedBody" : "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}\nHost {{{dimensions.host}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for gauge.consul.runtime.total_gc_pause_ns - Delta - Exclude x < 0 - Sum(1m): {{inputs.A.value}}\n{{else}}Current signal value for gauge.consul.runtime.total_gc_pause_ns - Delta - Exclude x < 0 - Sum(1m): {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+    "parameterizedSubject" : null,
+    "runbookUrl" : null,
+    "severity" : "Warning",
+    "tip" : null
+  }, {
+    "description" : "The value of gauge.consul.runtime.total_gc_pause_ns - Delta - Exclude x < 0 - Sum(1m) is above 5000000000 for 2m.",
+    "detectLabel" : "Servicemesh - Garbage collector more than 5s / minute",
+    "disabled" : false,
+    "notifications" : [ {
+      "type" : "Team",
+      "team" : "Emh26qmAEAA"
+    } ],
+    "parameterizedBody" : "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nHost: {{{dimensions.host}}}\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for gauge.consul.runtime.total_gc_pause_ns - Delta - Exclude x < 0 - Sum(1m): {{inputs.A.value}}\n{{else}}Current signal value for gauge.consul.runtime.total_gc_pause_ns - Delta - Exclude x < 0 - Sum(1m): {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+    "parameterizedSubject" : null,
+    "runbookUrl" : "",
+    "severity" : "Critical",
+    "tip" : ""
+  } ],
+  "tags" : [ ],
+  "teams" : [ "Emh26qmAEAA" ],
+  "timezone" : "",
+  "visualizationOptions" : {
+    "disableSampling" : false,
+    "publishLabelOptions" : [ {
+      "displayName" : "gauge.consul.runtime.total_gc_pause_ns - Delta - Exclude x < 0 - Sum(1m)",
+      "label" : "A",
+      "paletteIndex" : null,
+      "valuePrefix" : null,
+      "valueSuffix" : null,
+      "valueUnit" : "Nanosecond"
+    } ],
+    "showDataMarkers" : true,
+    "showEventLines" : false,
+    "time" : {
+      "range" : 86400000,
+      "rangeEnd" : 0,
+      "type" : "relative"
+    }
+  }
+}

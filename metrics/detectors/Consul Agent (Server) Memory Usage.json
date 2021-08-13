@@ -1,0 +1,71 @@
+{
+  "authorizedWriters" : {
+    "teams" : [ ],
+    "users" : [ ]
+  },
+  "created" : 1624947150431,
+  "creator" : "Eilz2PSAEAA",
+  "customProperties" : { },
+  "description" : "",
+  "id" : "E5BxFSoAEAA",
+  "labelResolutions" : {
+    "Consul Agent Memory Usage 90% Rule" : 10000
+  },
+  "lastUpdated" : 1628598071620,
+  "lastUpdatedBy" : "Eilz2PSAEAA",
+  "maxDelay" : 0,
+  "minDelay" : 0,
+  "name" : "Servicemesh - Consul Agent (Server) Memory Usage 90% Detector",
+  "overMTSLimit" : false,
+  "packageSpecifications" : "signalfx==0.1.8",
+  "programText" : "from signalfx.detectors.countdown import countdown\nA = data('memory.total', filter=filter('plugin', 'consul')).sum(by=['host']).publish(label='A', enable=False)\nB = data('gauge.consul.runtime.sys_bytes', filter=filter('plugin', 'consul') and filter('consul_mode', 'server')).sum(by=['host']).publish(label='B', enable=False)\nAB = alerts(detector_name='Memory Usage 90% Detector').publish(label='AB')\nC = ((1-(A-B)/A)*100).publish(label='C')\ncountdown.hours_left_stream_incr_detector(stream=C, maximum_capacity=90, lower_threshold=24, fire_lasting=lasting('15m', 1), clear_threshold=36, clear_lasting=lasting('15m', 1), use_double_ewma=False).publish('Consul Agent Memory Usage 90% Rule')",
+  "rules" : [ {
+    "description" : "The signal Percent used (assumed to be increasing) is projected to increase to 90 in 24 hour(s).",
+    "detectLabel" : "Consul Agent Memory Usage 90% Rule",
+    "disabled" : false,
+    "notifications" : [ {
+      "type" : "Team",
+      "team" : "Emh26qmAEAA"
+    } ],
+    "parameterizedBody" : "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}\nHostname: {{{dimensions.host}}}\n{{/if}}\n\nHours left: {{inputs.hours_left.value}}\n\n{{#notEmpty dimensions}}Signal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+    "parameterizedSubject" : "{{ruleSeverity}} Alert: Consul Agent memory usage reaching 90%",
+    "runbookUrl" : null,
+    "severity" : "Critical",
+    "tip" : null
+  } ],
+  "tags" : [ ],
+  "teams" : [ "Emh26qmAEAA" ],
+  "timezone" : "",
+  "visualizationOptions" : {
+    "disableSampling" : false,
+    "publishLabelOptions" : [ {
+      "displayName" : "memory.total - Sum by host",
+      "label" : "A",
+      "paletteIndex" : null,
+      "valuePrefix" : null,
+      "valueSuffix" : null,
+      "valueUnit" : "Byte"
+    }, {
+      "displayName" : "gauge.consul.runtime.sys_bytes - Sum by host",
+      "label" : "B",
+      "paletteIndex" : null,
+      "valuePrefix" : null,
+      "valueSuffix" : null,
+      "valueUnit" : "Byte"
+    }, {
+      "displayName" : "Percent used",
+      "label" : "C",
+      "paletteIndex" : null,
+      "valuePrefix" : null,
+      "valueSuffix" : "%",
+      "valueUnit" : null
+    } ],
+    "showDataMarkers" : true,
+    "showEventLines" : false,
+    "time" : {
+      "range" : 86400000,
+      "rangeEnd" : 0,
+      "type" : "relative"
+    }
+  }
+}
