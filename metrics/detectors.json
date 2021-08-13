@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Autopilot health",
+        "id": "E5B4HEKAAAA"
+    },
+    {
+        "name": "Consul Agent (Server) Memory Usage",
+        "id": "E5BxFSoAEAA"
+    },
+    {
+        "name": "Election events",
+        "id": "E5IFqyTAAAA"
+    },
+    {
+        "name": "Garbage collection ns",
+        "id": "E5IDk1IAEAA"
+    },
+    {
+        "name": "Last Contacted Leader",
+        "id": "E5BzeOiAEAA"
+    },
+    {
+        "name": "RPC requests",
+        "id": "E5IIlRQAEAA"
+    },
+    {
+        "name": "Raft candidate state",
+        "id": "E5B2bQZAIAA"
+    },
+    {
+        "name": "Raft commit time",
+        "id": "E5IEZMVAEAA"
+    }
+]
