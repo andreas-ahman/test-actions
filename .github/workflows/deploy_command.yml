@@ -4,6 +4,7 @@ on:
     types: [deploy-command]
 jobs:
   deploy:
+    name: Deploying ${{ github.event.client_payload.slash_command.args.unnamed.arg1 }}
     runs-on: ubuntu-latest
     steps:
       # Checkout the PR branch
