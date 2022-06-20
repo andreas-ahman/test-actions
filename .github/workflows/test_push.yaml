@@ -27,4 +27,6 @@ jobs:
       - name: Run the playbook
         id: run_playbook
         run: |
+          echo "${{ fromJson(needs.create-matrix.outputs.matrix-ansible) }}"
+          echo "${{ fromJson(needs.create-matrix.outputs.matrix-ansible) }}" | jq .
           echo  "ansible-playbook -e gcp_cred_file=${{github.workspace}}/sa.json -e env=${{matrix.environment}}  -e datacenter=${{matrix.datacenters }} update_nodes.yaml"
