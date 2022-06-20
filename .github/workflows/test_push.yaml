@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
-      matrix: ${{ fromJson(needs.create-matrix.outputs.matrix-ansible.include.datacenters) }}
+      matrix: ${{ fromJson(needs.create-matrix.outputs.matrix-ansible.include[0].datacenters) }}
     steps:
       - name: Run the playbook
         id: run_playbook
