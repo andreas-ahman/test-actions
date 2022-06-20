@@ -17,7 +17,7 @@ jobs:
           echo "::set-output name=matrix-plan::$(jq -cr '{"plans":map(select(has("common")).common.plans|keys)[0]|sort_by(length),"environment":["${{env.environment}}"],"include":map(select(.[]=="${{env.environment}}" or .common))}' env.json)"
           #echo "::set-output name=matrix-ansible::$(jq -cr '{"include":[{"datacenter":map(select(.[]=="${{env.environment}}"))|.[].datacenters|.[],"common":map(select(.[]==.common).common),"env":map(select(.[]=="${{env.environment}}"))|.[]}]}' env.json)"
           #apply echo "::set-output name=matrix-ansible::$(jq -cr '{"include":[{"datacenter":map(select(has("datacenters")).datacenters)|.[]|.[],"common":map(select(.[]==.common).common)|.[],"env":map(select(.[]=="dev"))|.[]}]}' env.json)"
-          echo  "::set-output name=matrix-ansible::$(jq '. as $root | .[] | select(has("environment")).environment as $env|$root|{"include":[{"environment": $env,"datacenter": map(select(has("environment") and .environment == $env).datacenters)|.[]|.[],"env": map(select(.[]==$env)),"common": map(select(.common))|.[]|.[]}]}' env.json | jq -crn '{"include":[inputs.include[]]}')"
+          echo  "::set-output name=matrix-ansible::$(jq '. as $root | .[] | select(has("environment")).environment as $env|$root|{"include":[{"environment": $env,"datacenter": map(select(has("environment") and .environment == $env).datacenters)|.[]|.[],"vmware_datacenter": map(select(has("environment") and .environment == $env).vmware_datacenter)|.[],"gcp_project": map(select(has("environment") and .environment == $env).gcp_project)|.[],"env": map(select(has("environment") and .environment == $env).env)|.[],"common": map(select(.common))|.[]|.[]}]}' env.json | jq -crn '{"include":[inputs.include[]]}')"
 
   ansible:
     needs: create-matrix
@@ -31,4 +31,4 @@ jobs:
         id: run_playbook
         run: |
           echo "${{ needs.create-matrix.outputs.matrix-ansible }}"
-          echo  "ansible-playbook -e gcp_cred_file=${{github.workspace}}/sa.json -e env=${{matrix.env.environment}}  -e datacenter=${{matrix.datacenter }} update_nodes.yaml"
+          echo  "ansible-playbook -e gcp_cred_file=${{github.workspace}}/sa.json -e env=${{matrix.environment}}  -e datacenter=${{matrix.datacenter }} update_nodes.yaml"
