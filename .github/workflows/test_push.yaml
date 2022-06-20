@@ -15,7 +15,7 @@ jobs:
     - id: set-matrix
       run: |
           echo "::set-output name=matrix-plan::$(jq -cr '{"plans":map(select(has("common")).common.plans|keys)[0]|sort_by(length),"environment":["${{env.environment}}"],"include":map(select(.[]=="${{env.environment}}" or .common))}' env.json)"
-          echo "::set-output name=matrix-ansible::$(jq -cr '{"datacenters":map(select(.[]=="dev"))|.[].datacenters}' env.json)"
+          echo "::set-output name=matrix-ansible::$(jq -cr '{"environment":["${{inputs.environment}}"],"include":map(select(.[]=="${{inputs.environment}}" or .common))}' env.json)"
   ansible:
     needs: create-matrix
     name: 'ansible'
