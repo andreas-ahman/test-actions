@@ -1,9 +1,30 @@
 name: 'Terraform Plan Stage (PR)'
 on:
   - push
+env:
+  environment: dev
 jobs:
   create-matrix:
     runs-on: ubuntu-latest
+    outputs:
+      matrix-plan: ${{ steps.set-matrix.outputs.matrix-plan }}
+      matrix-ansible: ${{ steps.set-matrix.outputs.matrix-ansible }}
     steps:
     - name: 'Checkout'
-      run: echo "Running"
+      uses: actions/checkout@v2
+    - id: set-matrix
+      run: |
+          echo "::set-output name=matrix-plan::$(jq -cr '{"plans":map(select(has("common")).common.plans|keys)[0]|sort_by(length),"environment":["${{env.environment}}"],"include":map(select(.[]=="${{env.environment}}" or .common))}' env.json)"
+          echo "::set-output name=matrix-ansible::$(jq -cr '{"environment":["${{env.environment}}"],"datacenters":map(select(.[]=="dev"))|.[].datacenters,"include":map(select(.[]=="${{env.environment}}" or .common))}' env.json)"
+  ansible:
+    needs: create-matrix
+    name: 'ansible'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix: ${{ fromJson(needs.create-matrix.outputs.matrix-ansible) }}
+    steps:
+      - name: Run the playbook
+        id: run_playbook
+        run: |
+          echo  "ansible-playbook -e gcp_cred_file=${{github.workspace}}/sa.json -e env=${{matrix.environment}}  -e datacenter=${{matrix.datacenters }} update_nodes.yaml"
