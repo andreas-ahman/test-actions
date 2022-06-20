@@ -15,7 +15,7 @@ jobs:
     - id: set-matrix
       run: |
           echo "::set-output name=matrix-plan::$(jq -cr '{"plans":map(select(has("common")).common.plans|keys)[0]|sort_by(length),"environment":["${{env.environment}}"],"include":map(select(.[]=="${{env.environment}}" or .common))}' env.json)"
-          echo "::set-output name=matrix-ansible::$(jq -cr '{"environment":["${{inputs.environment}}"],"include":map(select(.[]=="${{inputs.environment}}" or .common))}' env.json)"
+          echo "::set-output name=matrix-ansible::$(jq -cr '{"environment":["dev"],"include":map(select(.[]=="dev" or .common))}' env.json)"
   ansible:
     needs: create-matrix
     name: 'ansible'
@@ -28,5 +28,5 @@ jobs:
         id: run_playbook
         run: |
           echo "${{ needs.create-matrix.outputs.matrix-ansible }}"
-          echo "${{ needs.create-matrix.outputs.matrix-ansible }}" | jq .
+          echo "${{ toJson(needs.create-matrix.outputs.matrix-ansible) }}" | jq .
           echo  "ansible-playbook -e gcp_cred_file=${{github.workspace}}/sa.json -e env=${{matrix.environment}}  -e datacenter=${{matrix.datacenters }} update_nodes.yaml"
